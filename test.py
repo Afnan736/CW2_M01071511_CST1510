@@ -1,7 +1,6 @@
 name = input('enter your name: ')
 num = int(input('enter your first number: '))
-numto = int(input('enter your second number: '))
+num2 = int(input('enter your second number: '))
 
-mul = num * numto  
-
-print(f"{name} your answer is {num} x {numto} is {mul}")
+x = num * num2
+print(f"{name} your answer is {num} x {num2} is {x}")
