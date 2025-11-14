@@ -1,6 +1,5 @@
 from application import register_user, log_in
 
-
 def menu():
   print('*' * 20)
   print('*** Welcome to my ststem***')
@@ -9,7 +8,6 @@ def menu():
   print('2. login')
   print('3. Exit!!')
   print('*' * 20)
-
 
 def main():
   while True :
@@ -25,4 +23,5 @@ def main():
     elif choice == '3' :
       print('good bye!!')
       break 
+
 main()
