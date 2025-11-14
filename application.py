@@ -21,7 +21,7 @@ def register_user():
   psw = input('enter your password:')
   hash = hash_password(psw)
   with open('user.txt','a') as f :
-   f.write(f'{name},{hash}\n')
+   f.write(f'{name}, {psw}, {hash}\n')
   print(f'{name}, {psw}, {hash}, register sucessfully\n')
 
 
@@ -33,7 +33,7 @@ def log_in():
         users = f.readlines()
     
     for user in users:
-        name_, hash = user.strip().split(', ')
+        name_ , hash = user.strip().split(', ')
         
         if name_ == name:
             return validate_hash(password, hash)
