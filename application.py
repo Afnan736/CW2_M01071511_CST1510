@@ -1,23 +1,19 @@
 import bcrypt
 import string
 
-
 def hash_password(password):
- binary_pass = password.encode('utf-8')
- salt = bcrypt.gensalt()
- hash_password = bcrypt.hashpw(binary_pass, salt)
- return hash_password.decode ('utf-8')
+    binary_pass = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(binary_pass, salt)
+    return hashed_password.decode('utf-8')
 
-
-def validate_hash(password, hash ):
- hash_password = hash.encode('utf-8')
- bin_pssword = password.encode('utf-8')
- return bcrypt.checkpw(bin_pssword, hash_password)
-
-
+def validate_hash(password, stored_hash):
+    hash_bytes = stored_hash.encode('utf-8')
+    password_bytes = password.encode('utf-8')
+    return bcrypt.checkpw(password_bytes, hash_bytes)
 
 def register_user():
-    # Name validation - separate loops for each field
+   
     while True:
         fname = input('Enter your first name: ').strip()
         if not fname:
@@ -43,7 +39,7 @@ def register_user():
             print("Last name cannot contain numbers, spaces, or special characters.")
             continue
         
-        # Check if name already exists
+        
         try:
             name_exists = False
             with open('user.txt', 'r') as f:
@@ -103,22 +99,36 @@ def register_user():
         f.write(f'{fname},{lname},{psw},{hash_val}\n')   
     print("User registered successfully!")
 
-
-
-
-
 def log_in():
-    name = input('enter your name: ')
-    password = input('enter your password: ')
-    
-    with open('user.txt', 'r') as f:
-        users = f.readlines()
-    
-    for user in users:
-        name_ , hash = user.strip().split(', ')
-        
-        if name_ == name:
-            return validate_hash(password, hash)
-    
-    return False
+    while True:
+        full_name = input('Enter your full name (first and last name without space): ').strip()
+        password = input('Enter your password: ')
 
+        nospace = full_name.replace(' ', '')
+
+        try:
+            with open('user.txt', 'r') as f:
+                users = f.readlines()
+
+            user_found = False
+            for user in users:
+                fname, lname, psw, hash_val = user.strip().split(',')
+                stored_name = fname + lname
+                
+                if stored_name == nospace:
+                    user_found = True
+                    if validate_hash(password, hash_val):
+                        print("Login successful!")
+                        return True
+                    else:
+                        print("Wrong password. Try again.")
+                        break
+            
+            if not user_found:
+                print("Name not found. Try again.")
+                return False  
+            
+        except FileNotFoundError:
+            print("No users found. Please register first.")
+            return False
+       
