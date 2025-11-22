@@ -37,7 +37,7 @@ def register_user():
     while True:
         try:
             name_exists = False
-            with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\user.txt', 'r') as f:
+            with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\DATA\user.txt', 'r') as f:
                 for line in f:
                     existing_fname, existing_lname, _, _ = line.strip().split(',')
                     
@@ -93,7 +93,7 @@ def register_user():
     
     hash_val = hash_password(psw)
 
-    with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\user.txt', 'a') as f:
+    with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\DATA\user.txt', 'a') as f:
         f.write(f'{fname},{lname},{psw},{hash_val}\n')   
     print("Registered successfully!")
 
@@ -109,7 +109,7 @@ def log_in():
         nospace = full_name.replace(' ', '')
 
         try:
-            with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\user.txt', 'r') as f:
+            with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\DATA\user.txt', 'r') as f:
                 users = f.readlines()
 
             user_found = False
