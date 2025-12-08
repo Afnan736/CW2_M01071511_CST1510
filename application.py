@@ -1,5 +1,7 @@
 import bcrypt
 import string
+# Add get_user_hash to the imports
+from app.user import check_username_exists, add_user, change_username, change_password, delete_user_account, get_user_hash
 
 def hash_password(password):
     binary_pass = password.encode('utf-8')
@@ -12,49 +14,48 @@ def validate_hash(password, stored_hash):
     password_bytes = password.encode('utf-8')
     return bcrypt.checkpw(password_bytes, hash_bytes)
 
-def register_user():
-    while True:
-        fname = input('Enter your first name: ').strip()
-        if not fname:
-            print("First name cannot be empty.")
-            continue
-        if len(fname) < 2 or len(fname) > 25:
-            print("First name must be between 2 and 25 characters.")
-            continue
-        break
+def validate_password_strength(psw):
+    has_upper = any(char.isupper() for char in psw)
+    has_lower = any(char.islower() for char in psw)
+    has_digit = any(char.isdigit() for char in psw)
+    has_special = any(char in string.punctuation for char in psw)
+    has_space = ' ' in psw
     
+    if len(psw) >= 8 and has_upper and has_lower and has_digit and has_special and not has_space:
+        return True
+    else:
+        print("Password must have:")
+        print("- At least 8 characters" if len(psw) >= 8 else "- Minimum 8 characters")
+        print("- Uppercase letter" if has_upper else "- At least one uppercase letter")
+        print("- Lowercase letter" if has_lower else "- At least one lowercase letter")
+        print("- Number" if has_digit else "- At least one number")
+        print("- Special character" if has_special else "- At least one special character")
+        print("- No spaces" if not has_space else "- Remove spaces")
+        return False
+
+def register_user():
+    # Username validation
     while True:
-        lname = input('Enter your last name: ').strip()
-        if not lname:
-            print("Last name cannot be empty.")
-            continue
-        if len(lname) < 2 or len(lname) > 25:
-            print("Last name must be between 2 and 25 characters.")
-            continue
-        break
+        username = input('Enter your username: ').strip()
         
-    # Check if name already exists
-    while True:
-        try:
-            name_exists = False
-            with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\DATA\user.txt', 'r') as f:
-                for line in f:
-                    existing_fname, existing_lname, _, _ = line.strip().split(',')
-                    
-                    if existing_fname == fname and existing_lname == lname:
-                        name_exists = True
-                        break
+        if not username:
+            print("Username cannot be empty.")
+            continue
             
-            if name_exists:
-                print("Name already exists. Please use a different first name or last name.")
-                fname = input('Enter your first name: ')
-                lname = input('Enter your last name: ')
-                continue
-            else:
-                break  
-                    
-        except FileNotFoundError:
-            break  
+        if len(username) < 3 or len(username) > 20:
+            print("Username must be between 3 and 20 characters.")
+            continue
+            
+        if ' ' in username:
+            print("Username cannot contain spaces.")
+            continue
+
+        # Check if username already exists
+        if check_username_exists(username):
+            print("Username already exists. Please choose a different username.")
+            continue
+        else:
+            break 
 
     # Password validation
     while True:
@@ -63,74 +64,123 @@ def register_user():
             print("Password cannot be empty.")
             continue
             
-        upper = lower = digit = special = space = False
-        
-        for char in psw:
-            if char.isupper(): upper = True
-            if char.islower(): lower = True
-            if char.isdigit(): digit = True
-            if char in string.punctuation: special = True
-            if char == ' ': space = True
-        
-        # Check each requirement and show specific errors
-        if len(psw) >= 8 and upper and lower and digit and special and not space:
+        if validate_password_strength(psw):
             break
-        else:
-            print("Password missing requirements:")
-            if len(psw) < 8:
-                print(" At least 8 characters")
-            if not upper:
-                print(" At least one uppercase letter (A-Z)")
-            if not lower:
-                print(" At least one lowercase letter (a-z)")
-            if not digit:
-                print(" At least one number (0-9)")
-            if not special:
-                print(" At least one special character")
-            if space:
-                print(" No spaces allowed")
-            continue
+        continue
     
     hash_val = hash_password(psw)
-
-    with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\DATA\user.txt', 'a') as f:
-        f.write(f'{fname},{lname},{psw},{hash_val}\n')   
+    
+    # Save to database
+    add_user(username, psw, hash_val)
+    
     print("Registered successfully!")
 
-
+def change_username_menu():
+    """Change username function"""
+    old_username = input("Enter your current username: ").strip()
     
+    # Check if old username exists
+    if not check_username_exists(old_username):
+        print(f"User '{old_username}' not found.")
+        return
+    
+    # Get new username
+    while True:
+        new_username = input("Enter new username: ").strip()
+        
+        if not new_username:
+            print("Username cannot be empty.")
+            continue
+            
+        if len(new_username) < 3 or len(new_username) > 20:
+            print("Username must be between 3 and 20 characters.")
+            continue
+            
+        if ' ' in new_username:
+            print("Username cannot contain spaces.")
+            continue
+            
+        if check_username_exists(new_username):
+            print("Username already exists. Please choose a different one.")
+            continue
+            
+        break
+    
+    # Change username
+    change_username(old_username, new_username)
+    print(f"Username changed from '{old_username}' to '{new_username}'")
+
+def change_password_menu():
+    """Change password function"""
+    username = input("Enter your username: ").strip()
+    
+    # Check if user exists
+    if not check_username_exists(username):
+        print(f"User '{username}' not found.")
+        return
+    
+    # Get new password
+    while True:
+        new_psw = input("Enter new password: ")
+        confirm_psw = input("Confirm new password: ")
+        
+        if new_psw != confirm_psw:
+            print("Passwords don't match. Try again.")
+            continue
+            
+        if validate_password_strength(new_psw):
+            break
+        continue
+    
+    # Hash and update password
+    new_hash = hash_password(new_psw)
+    change_password(username, new_psw, new_hash)
+    print(f"Password changed for '{username}'")
+
+def delete_account_menu():
+    """Delete account function"""
+    username = input("Enter username to delete: ").strip()
+    
+    # Check if user exists
+    if not check_username_exists(username):
+        print(f"User '{username}' not found.")
+        return
+    
+    # Ask for password
+    password = input("Enter password to confirm deletion: ")
+    
+    # Verify password
+    stored_hash = get_user_hash(username)
+    if not stored_hash or not validate_hash(password, stored_hash):
+        print("Incorrect password. Deletion cancelled.")
+        return
+    
+    # Confirm deletion
+    confirm = input(f"Are you sure you want to delete '{username}'? Type 'yes' to confirm: ").strip().lower()
+    
+    if confirm == 'yes':
+        delete_user_account(username)
+        print(f"User '{username}' deleted. Username, password and hashed password removed.")
+    else:
+        print("Deletion cancelled.")
+
 
 def log_in():
-
+    """Login function"""
     while True:
-        full_name = input('Enter your full name both first and last name: ').strip()
+        username = input('Enter your username: ').strip()
         password = input('Enter your password: ')
 
-        nospace = full_name.replace(' ', '')
-
-        try:
-            with open(r'C:\Users\afnan\Desktop\CW2_M01071511_CST1510\DATA\user.txt', 'r') as f:
-                users = f.readlines()
-
-            user_found = False
-            for user in users:
-                fname, lname, psw, hash_val = user.strip().split(',')
-                stored_name = fname + lname
-                
-                if stored_name == nospace:
-                    user_found = True
-                    if validate_hash(password, hash_val):
-                        print("Login successful!")
-                        return True
-                    else:
-                        print("Wrong password. Try again.")
-                        break
-            
-            
-            if not user_found:
-                print('Name not found. Try again.')
-                return False
-                
-        except FileNotFoundError:
-            print("No users found. Please register first.")
+        # Get hash from database using function in user.py
+        stored_hash = get_user_hash(username)
+        
+        if stored_hash:
+            if validate_hash(password, stored_hash):
+                print("Login successful!")
+                return True
+            else:
+                print("Wrong password. Try again.")
+                break
+        else:
+            print('Username not found. Try again.')
             return False
