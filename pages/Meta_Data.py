@@ -224,18 +224,11 @@ elif action == "Delete Dataset":
         if dataset_id:
             dataset = filtered[filtered['dataset_id'] == dataset_id].iloc[0]
             
-            # Display dataset details and confirmation
-            st.warning(f"Delete Dataset #{dataset_id}?")
-            st.write(f"**Name:** {dataset['name']}")
-            st.write(f"**Rows:** {dataset['rows']:,} | **Columns:** {dataset['columns']}")
-            st.write(f"**Uploaded By:** {dataset['uploaded_by']}")
-            
-            # Confirmation checkbox
-            if st.checkbox("Confirm Delete"):
-                if st.button("Delete Dataset"):
-                    delete_md(conn, dataset_id)
-                    st.success("Dataset Deleted!")
-                    st.rerun()
+         # Delete button
+        if st.button("Delete"):
+            delete_md(conn,dataset)
+            st.success("Dataset Deleted")
+            st.rerun()
 
 # Summary section (collapsible)
 with st.expander("Summary"):
