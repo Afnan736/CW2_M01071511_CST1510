@@ -85,7 +85,7 @@ with chart_col1:
                incidents, it allows users to quickly gauge the overall risk landscape. This chart is particularly useful
                 for identifying urgent cases that may require immediate intervention, as well as understanding the balance
                 of minor versus critical incidents. Such insights help organizations allocate resources efficiently, focus on 
-               high-priority threats, and implement proactive measures to reduce potential impact._""")
+               high-priority threats, and implement proactive measures to reduce potential impact._ """)
 
 # Second chart: Incident timeline (line chart)
 with chart_col2:
@@ -174,7 +174,7 @@ elif action == "Update Incident":
                  that the current status of incidents is correctly reflected in both metrics and visualizations. This capability supports 
                 continuous monitoring, helps teams track incident resolution progress, and provides a reliable foundation for reporting 
                 and analysis. Accurate updates also assist in understanding incident trends and making informed operational and strategic 
-                decisions. _ """)
+                decisions._ """)
 
     # Check if there are incidents to update
     if filtered.empty:
