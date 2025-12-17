@@ -6,7 +6,7 @@ from application import validate_password_strength
 
 # Page configuration - sets up the web page layout
 st.set_page_config(page_title="Home", page_icon="🏠", layout="wide")
-st.header("User Management")  # Main page title
+st.header("Login & Registration")  # Main page title
 
 # Create two tabs for Login and Registration functionality
 tab1, tab2 = st.tabs(["Login", "Register"])
