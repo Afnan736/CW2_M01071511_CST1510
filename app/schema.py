@@ -1,4 +1,4 @@
-iimport sqlite3
+import sqlite3
 
 # Create or recreate the users table with new structure
 def cte_user_table():
