@@ -73,7 +73,7 @@ with tab1:
                 new_hash = bcrypt.hashpw(
                     new_pass.encode(), bcrypt.gensalt()
                 ).decode()
-                change_password(user_pass, new_hash)
+                change_password(user_pass, new_pass, new_hash)
                 st.success("Password changed successfully")
 
     # EXPANDER: Delete Account - for account deletion with confirmation
@@ -122,5 +122,5 @@ with tab2:
             hash_val = bcrypt.hashpw(
                 new_pwd.encode(), bcrypt.gensalt()
             ).decode()
-            add_user(new_user, hash_val)  # Add user to database
+            add_user(new_user,new_pwd, hash_val)  # Add user to database
             st.success("Registered successfully!")
