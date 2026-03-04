@@ -216,14 +216,6 @@ The **IT Intelligence Platform** provides a secure, scalable, and user-friendly 
 
 ---
 
-## License
-
-This project is licensed under the **MIT License**.
-
-See the `LICENSE` file for details.
-
----
-
 ## Acknowledgments
 
 - **Streamlit** — Web application framework
